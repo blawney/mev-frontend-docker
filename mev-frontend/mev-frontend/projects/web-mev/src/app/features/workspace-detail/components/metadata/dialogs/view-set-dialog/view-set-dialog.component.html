@@ -1,0 +1,15 @@
+<div class="container">
+    <p mat-dialog-title>{{ data.name }}</p>
+    <div mat-dialog-content>
+      <p>Type: {{ data.type }}</p>
+      {{ isObservationSet ? 'Observations' : 'Features' }}: 
+      <ul> 
+        <li *ngFor="let elem of data.elements">{{ elem.id }}</li>
+      </ul>
+    </div>
+  
+    <div mat-dialog-actions>
+      <button mat-button mat-raised-button (click)="onNoClick()" color="accent" tabindex="-1">Close</button>
+    </div>
+</div>
+  

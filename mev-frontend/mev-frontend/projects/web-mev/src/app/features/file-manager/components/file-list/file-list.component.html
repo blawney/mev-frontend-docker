@@ -1,0 +1,138 @@
+<mev-spinner-overlay *ngIf="isWait"></mev-spinner-overlay>
+
+<div class="instruction">
+  Upload and manage your files here. The table below shows all files associated with your
+  account. After your files have been uploaded and validated, you can add them to
+  workspaces to conduct your analysis.
+  Note that we need to know what type of file we are working with. Hence, after upload, we
+  ask that you specify a file type. To learn more about the available file types and their
+  formats, <a (click)="viewFileTypes()">click here</a>. If applicable, you can preview the file to check that we have parsed it correctly. If
+  something does not appear to be correct, you may have to edit your file offline and
+  upload again.
+</div>
+<div class="file-btn-group">
+  <div>
+    <button mat-raised-button color="accent" (click)="addItem()">
+      <mat-icon aria-label="Upload a file from computer">add</mat-icon>
+      Upload a file from computer
+    </button>
+    <button mat-raised-button color="accent" (click)="addDropBoxItem()">
+      <mat-icon fontSet="material-icons-outlined" aria-label="Upload from Dropbox">backup</mat-icon>
+      Upload from Dropbox
+    </button>
+  </div>
+  <button mat-raised-button color="accent" (click)="refresh()">
+    <mat-icon aria-label="Refresh">refresh</mat-icon>
+    Refresh
+  </button>
+</div>
+
+
+<div class="file-list-container">
+
+  <div class="form">
+    <mat-form-field floatPlaceholder="never" color="accent">
+      <input matInput #filter placeholder="Filter files">
+    </mat-form-field>
+  </div>
+  <div *ngIf="uploadInProgressMsg" class="process-status">{{ uploadInProgressMsg }}</div>
+  <div *ngIf="dropboxUploadInProgressMsg" class="process-status">{{ dropboxUploadInProgressMsg }}</div>
+
+  <mat-table #table [dataSource]="dataSource" matSort matSortActive="created" matSortDirection="desc" class="mat-cell">
+
+    <ng-container matColumnDef="id">
+      <mat-header-cell *matHeaderCellDef mat-sort-header>Id</mat-header-cell>
+      <mat-cell *matCellDef="let row">{{row.id}}</mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="name">
+      <mat-header-cell *matHeaderCellDef mat-sort-header class="file-table-header">File name</mat-header-cell>
+      <mat-cell *matCellDef="let row" [class.warning-cell]="!row.resource_type"> {{row.name}}</mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="resource_type">
+      <mat-header-cell *matHeaderCellDef mat-sort-header class="file-table-header">File type</mat-header-cell>
+      <mat-cell *matCellDef="let row"
+        [ngClass]="{'warning-cell': !row.resource_type, 'warning-cell--asterisk ': !row.resource_type}">
+        {{ row.readable_resource_type || 'Please specify file type' }}</mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="status">
+      <mat-header-cell *matHeaderCellDef mat-sort-header class="file-table-header">Status</mat-header-cell>
+      <mat-cell *matCellDef="let row"> {{ row.status}}</mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="size">
+      <mat-header-cell *matHeaderCellDef mat-sort-header class="file-table-header">File size</mat-header-cell>
+      <mat-cell *matCellDef="let row"> {{ row.size | byteName }}</mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="created">
+      <mat-header-cell *matHeaderCellDef mat-sort-header class="file-table-header">Creation date</mat-header-cell>
+      <mat-cell *matCellDef="let row"> {{ row.created | date :'medium' }}</mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="is_active">
+      <mat-header-cell *matHeaderCellDef mat-sort-header class="file-table-header">Active</mat-header-cell>
+      <mat-cell *matCellDef="let row"> {{ row.is_active ? 'Active' : 'Not active' }} </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="is_public">
+      <mat-header-cell *matHeaderCellDef mat-sort-header class="file-table-header">Public</mat-header-cell>
+      <mat-cell *matCellDef="let row"> {{row.is_public ? 'Public' : 'Private'}}</mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="workspace">
+      <mat-header-cell *matHeaderCellDef mat-sort-header class="file-table-header">Workspace(s)</mat-header-cell>
+      <mat-cell *matCellDef="let row"> {{row.workspaces}}</mat-cell>
+    </ng-container>
+
+
+    <!-- actions -->
+    <ng-container matColumnDef="actions">
+      <mat-header-cell *matHeaderCellDef class="file-table-header">Actions</mat-header-cell>
+
+      <mat-cell *matCellDef="let row; let i=index;">
+        <button mat-icon-button color="accent" title="Preview"
+          (click)="previewItem(row.id)">
+          <mat-icon aria-label="Preview">visibility</mat-icon>
+        </button>
+
+        <button mat-icon-button color="accent" title="Edit" [disabled]="!row.is_active"
+          (click)="editItem(i, row.id, row.name, row.resource_type)">
+          <mat-icon aria-label="Edit">edit</mat-icon>
+        </button>
+
+        <button mat-icon-button color="accent" title="Delete file" [disabled]="!row.is_active"
+          (click)="deleteItem(i, row.id, row.name, row.readable_resource_type)">
+          <mat-icon aria-label="Delete">delete</mat-icon>
+        </button>
+
+        <button mat-icon-button color="accent" title="Download" disabled>
+          <mat-icon aria-label="Download">get_app</mat-icon>
+        </button>
+
+        <button mat-icon-button color="accent" title="Download to DropBox" disabled>
+          <mat-icon aria-label="Download">cloud_download</mat-icon>
+        </button>
+
+      </mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+  </mat-table>
+
+  <div class="no-results" [style.display]="dataSource.renderedData.length == 0 ? '' : 'none'">
+    No results are available
+  </div>
+
+  <mat-paginator #paginator [length]="dataSource.filteredData.length" [pageIndex]="0" [pageSize]="10"
+    [pageSizeOptions]="[10, 25, 100]">
+  </mat-paginator>
+
+  <div class="warning-note" [style.display]="dataSource.renderedData.length >= 0 ? '' : 'none'">
+    * Please assign file types by clicking the Edit button in the table row
+  </div>
+
+</div>

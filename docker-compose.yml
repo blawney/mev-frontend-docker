@@ -1,0 +1,26 @@
+version: '3.7'
+
+services:
+
+  app:
+    build:
+      context: ./mev-frontend
+    stdin_open: true # docker run -i
+    tty: true        # docker run -t
+    entrypoint: /bin/bash
+    volumes:
+      - shared_volume:/var/www/html
+      - .:/workspace
+
+  nginx:
+    build:
+      context: ./nginx
+    volumes:
+      - shared_volume:/var/www/html
+    ports:
+      - 4200:80
+    depends_on:
+      - app
+
+volumes:
+  shared_volume:

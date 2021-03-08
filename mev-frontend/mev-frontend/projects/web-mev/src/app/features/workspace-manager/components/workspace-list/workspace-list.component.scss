@@ -1,0 +1,24 @@
+.instruction {
+  font-size: 14px;
+  padding-top: 10px;
+}
+
+.mat-header-cell {
+  background: #eeeeee;
+}
+
+.workspace-btn-group {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 20px;
+}
+
+.mat-cell a {
+  color: #03a9f4;
+  text-decoration: underline;
+}
+
+.no-results {
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
+  font-size: 12px;
+}

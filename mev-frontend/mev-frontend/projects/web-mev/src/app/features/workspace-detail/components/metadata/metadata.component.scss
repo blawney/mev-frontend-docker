@@ -1,0 +1,109 @@
+a:hover {
+  cursor: pointer;
+}
+
+.metadata-container {
+  margin: 20px;
+  width: 98%;
+}
+
+.mat-card {
+  overflow-x: scroll;
+}
+
+table {
+  width: 100%;
+}
+
+.mat-table-container {
+  width: 80%;
+  align-self: start;
+}
+
+.mat-header-cell {
+  text-transform: capitalize;
+}
+
+::ng-deep .mat-figure {
+  overflow: scroll;
+}
+
+.control-group {
+  display: flex;
+  justify-content: space-between;
+  padding: 16px;
+}
+
+::ng-deep .mat-button-toggle-label-content {
+  line-height: 36px !important;
+}
+
+button {
+  margin-right: 10px;
+}
+
+.visualization-table {
+  width: auto;
+
+  .mat-cell {
+    width: 150px;
+  }
+
+  .mat-header-cell:nth-child(n + 2) {
+    text-align: center;
+  }
+
+  .highlighted-cell {
+    width: 20px;
+    height: 20px;
+    margin: auto;
+  }
+}
+
+.mat-button-toggle-group {
+  float: right;
+}
+
+.mat-button-toggle-label-content,
+.mat-button-toggle-group button div {
+  line-height: 35px;
+}
+
+.mat-cell.mat-column-comment {
+  cursor: pointer;
+}
+
+.annotation-text {
+  padding: 10px;
+}
+
+.hint-text {
+  opacity: 0.5;
+}
+
+.annotation-table-wrapper {
+  display: flex;
+}
+
+.add-column-btn {
+  position: relative;
+  left: -50px;
+  top: 15px;
+  cursor: pointer;
+}
+
+.icon {
+  font-size: 14px;
+}
+
+.sample-color {
+  width: 15px;
+  height: 15px;
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 5px;
+}
+
+::ng-deep .mat-tooltip {
+  font-size: 12px;
+}

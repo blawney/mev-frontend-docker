@@ -1,0 +1,70 @@
+a:hover {
+  cursor: pointer;
+}
+
+.instruction {
+  font-size: 14px;
+  padding-top: 10px;
+}
+
+.mat-header-cell {
+  background: #eeeeee;
+}
+.mat-column-actions {
+  min-width: 250px;
+}
+
+.file-btn-group {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 20px;
+}
+
+button {
+  margin-right: 10px;
+}
+
+mat-cell {
+  word-wrap: break-word;
+  display: inline-block;
+  padding: 3px;
+  padding-right: 5px;
+}
+
+.warning-cell {
+  color: red;
+  font-weight: bold;
+}
+
+.warning-cell--asterisk {
+  &:after {
+    content: ' *';
+  }
+}
+
+.warning-note {
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
+  font-size: 14px;
+  font-weight: bold;
+  color: grey;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.no-results {
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
+  font-size: 12px;
+}
+
+.process-status {
+  font-size: 14px;
+  color: #666;
+  white-space: pre;
+}
+
+.mat-column-actions {
+  word-wrap: break-word !important;
+  white-space: unset !important;
+  flex: 0 0 20% !important;
+  width: 20% !important;
+}

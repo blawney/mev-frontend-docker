@@ -1,0 +1,111 @@
+<mev-spinner-overlay *ngIf="isWait"></mev-spinner-overlay>
+
+<section class="metadata-container">
+  <mat-card class="metadata-card">
+      <mat-card-content class="metadata-card__main">
+          <div class="metadata-card__instruction">
+            <p>
+              Here you can create <a (click)="viewCustomSetInfo()">custom observation and feature sets</a> to filter your data during
+              the analysis. You also can incorporate an annotation file as attributes to your custom observation set. 
+            </p>
+            <p *ngIf="(workspaceResources| annotationFilesPipe)?.length > 0; else noAnnotationFiles">
+              Click the Incorporate annotations button to use your annotation file.
+            </p>
+           <ng-template #noAnnotationFiles>
+             <p>Please upload an annotation file 
+               <mat-icon class="icon" matTooltipClass="tooltip" fontSet="material-icons-outlined"
+              matTooltip=" An Annotation Table is a special type of table that is be responsible for annotating observations/samples (e.g. adding sample names and associated attributes like experimental group or other covariates). The first column gives the sample names and the remaining columns  each individually represent different covariates associated with that sample." aria-label="Info tooltip about the field">info
+            </mat-icon>and add it to your workspace to. </p>
+           </ng-template>
+          </div>
+          <mat-divider [inset]="true"></mat-divider>
+          <div class="metadata-card__content">
+            <div class="control-group">
+              <div class="btn-group">
+                <button mat-raised-button color="accent" (click)="onCreateObservationSet()">
+                  <mat-icon aria-label="Create an observation set">add</mat-icon>
+                  Create an observation set
+                </button>
+      
+                <button mat-raised-button color="accent" (click)="onChooseAnnotation()"
+                [disabled]="(workspaceResources| annotationFilesPipe)?.length === 0">
+                  <mat-icon aria-label="Incorporate annotations">add</mat-icon>
+                  Incorporate annotations
+                  </button>
+      
+              </div>
+
+              <mat-button-toggle-group #customSetsViewMode="matButtonToggleGroup" value="tableMode">
+                <mat-button-toggle value="tableMode" aria-label="Text align left">
+                  Table view
+                </mat-button-toggle>
+                <mat-button-toggle value="visMode" aria-label="Text align center">
+                  Visualization
+                </mat-button-toggle>
+              </mat-button-toggle-group>
+            </div>
+            <div *ngIf="!customSetDS || !customSetDS.data || customSetDS.data.length === 0">
+              No custom observation and feature sets available.
+            </div>
+            <div *ngIf="customSetDS?.data?.length > 0">
+              <table *ngIf="customSetsViewMode.value === 'tableMode'" mat-table [dataSource]="customSetDS"
+                class="mat-elevation-z8">
+                <ng-container matColumnDef="name">
+                  <th mat-header-cell *matHeaderCellDef> Name </th>
+                  <td mat-cell *matCellDef="let element">
+                     <span class="sample-color" [style.background-color]="element.color"></span>
+                     {{element.name}} 
+                  </td>
+                </ng-container>
+      
+                <ng-container matColumnDef="type">
+                  <th mat-header-cell *matHeaderCellDef> Type (Observation/Feature set) </th>
+                  <td mat-cell *matCellDef="let element"> {{element.type}} </td>
+                </ng-container>
+      
+                <ng-container matColumnDef="actions">
+                  <th mat-header-cell *matHeaderCellDef>Actions</th>
+                  <td mat-cell *matCellDef="let element; let i=index;">
+                    <button mat-icon-button color="accent" title="View" (click)="onViewCustomSet(element)">
+                      <mat-icon aria-label="View">visibility</mat-icon>
+                    </button>
+                    <button mat-icon-button color="accent" title="Delete" (click)="onDeleteCustomSet(element.name)">
+                      <mat-icon aria-label="Delete">delete</mat-icon>
+                    </button>
+                    <button mat-icon-button color="accent" title="Edit" (click)="onEditCustomSet(element)">
+                      <mat-icon aria-label="Edit">edit</mat-icon>
+                    </button>
+                  </td>
+                </ng-container>
+      
+                <tr mat-header-row *matHeaderRowDef="customSetsDisplayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: customSetsDisplayedColumns;">
+      
+              </table>
+      
+      
+              <table *ngIf="customSetsViewMode.value === 'visMode'" mat-table [dataSource]="visObservationSetDS"
+                class="visualization-table">
+                <ng-container matColumnDef="id">
+                  <th mat-header-cell *matHeaderCellDef> Sample </th>
+                  <td mat-cell *matCellDef="let element"> {{ element.sampleName }} </td>
+                </ng-container>
+      
+                <ng-container *ngFor="let setCol of visObsDisplayedColumnsSetsOnly" matColumnDef="{{setCol}}">
+                  <th mat-header-cell *matHeaderCellDef>{{ setCol }}</th>
+                  <td mat-cell *matCellDef="let element">
+                    <div class="highlighted-cell" [style.background-color]="element[setCol]"
+                      [ngClass]="{'highlighted-cell2': element[setCol] === true}"></div>
+                  </td>
+                </ng-container>
+      
+      
+                <tr mat-header-row *matHeaderRowDef="visObsDisplayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: visObsDisplayedColumns;">
+                </tr>
+              </table>
+            </div>
+          </div>
+      </mat-card-content>
+  </mat-card>
+</section>

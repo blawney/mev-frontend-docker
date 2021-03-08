@@ -1,0 +1,47 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  width: 500px;
+}
+
+.container > * {
+  width: 100%;
+}
+
+.mat-dialog-content {
+  min-height: 350px;
+  max-height: none;
+  position: relative;
+  overflow: visible;
+}
+
+.mat-dialog-title {
+  font-size: 16px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  padding-top: 6px;
+}
+
+.mat-dialog-actions {
+  position: absolute;
+  bottom: 0;
+}
+
+.resource-label {
+  font-size: 16px;
+  word-break: break-all;
+}
+
+.resource-type-label {
+  color: #666;
+  font-size: 12px;
+}
+
+::ng-deep {
+  .selected-list .c-list .c-token {
+    word-break: break-all;
+  }
+}

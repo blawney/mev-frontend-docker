@@ -1,0 +1,38 @@
+<div class="analyses-container">
+  <section class="analyses-section">
+    <div class="tab-content">
+      The analysis pane on the left side displays the list of available
+      data analysis tools. Expand and collapse the list of tools clicking on a category.
+      Click on a item to set input parameters and run an analysis.
+      <div class="vertical-tab-container">
+        <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
+          <!-- tree node template for leaf nodes -->
+          <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding [ngClass]="{ 'active-node': node.id === selectedOperation.id }">
+            <!-- use a disabled button to provide padding for tree leaf -->
+            <button mat-icon-button disabled></button>
+            <button (click)="showOperationDetails(node)">
+              {{node.name}}
+            </button>
+          </mat-tree-node>
+          <!-- tree node template for expandable nodes -->
+          <mat-tree-node *matTreeNodeDef="let node;when: hasChild" matTreeNodePadding>
+            <button matTreeNodeToggle [attr.aria-label]="'Toggle ' + node.name">
+              <mat-icon class="mat-icon-rtl-mirror">
+                {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+              </mat-icon>
+              {{node.name}}
+            </button>
+            
+          </mat-tree-node>
+        </mat-tree>
+
+        <mat-divider [vertical]="true"></mat-divider>
+
+        <div class="operation-container">
+          <mev-operation *ngIf="selectedOperation" [operation]="selectedOperation" [workspaceId]="workspaceId"
+            [workspace$]="workspace$" (executedOperationId)="showExecutedOperationResult($event)"></mev-operation>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

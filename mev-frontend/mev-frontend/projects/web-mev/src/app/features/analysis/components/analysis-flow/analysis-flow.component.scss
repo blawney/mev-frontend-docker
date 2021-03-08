@@ -1,0 +1,32 @@
+.analysis-container {
+  margin: 20px;
+  width: 98%;
+}
+
+.btn-group {
+  padding: 15px 0;
+}
+
+.mat-card {
+  overflow-x: scroll;
+}
+
+::ng-deep {
+  .d3-tip {
+    line-height: 1;
+    font-weight: bold;
+    padding: 12px;
+    background: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    border-radius: 2px;
+    z-index: 1;
+  }
+
+  .circle {
+    cursor: pointer;
+  }
+
+  .text-label {
+    font-weight: bold;
+  }
+}

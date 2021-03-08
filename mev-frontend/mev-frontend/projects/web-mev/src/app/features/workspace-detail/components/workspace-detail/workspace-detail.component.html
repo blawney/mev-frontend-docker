@@ -1,0 +1,171 @@
+<mev-spinner-overlay *ngIf="isWait"></mev-spinner-overlay>
+
+<div class="workspace-header">
+  <a routerLink='/workarea' class="workspace-header__nav nav">
+    <mat-icon class="nav__icon" aria-label="Next step">reply</mat-icon>
+    <span class="nav__text">Back to File & Workspace list</span>
+  </a>
+  <span class="workspace-header__title" *ngIf="workspace$ | async as workspace">
+    Workspace
+    <b> {{ workspace.workspace_name }} </b>
+    <mat-icon class="workspace-header__icon" matTooltipClass="tooltip" fontSet="material-icons-outlined" matTooltip="Workspace: {{ workspace.workspace_name }} &#13;
+                          Created: {{ workspace.created }} &#13;
+                          Owner: {{ workspace.owner_email }}" aria-label="Info tooltip about the workspace">info
+    </mat-icon>
+  </span>
+</div>
+
+
+<mat-tab-group animationDuration="0ms" color="accent" [(selectedIndex)]="selectedTabIndex"
+  (selectedTabChange)="onTabChanged($event);">
+  <mat-tab label="Resources">
+    <ng-template matTabContent>
+      <div *ngIf="!workspaceResources?.length" class="instruction">
+        To perform analyses, you need to add or import data into the workspace. Select
+        from among the files you uploaded or import public data (if available)
+      </div>
+      <mat-toolbar>
+        <mat-form-field floatLabel='never' class='search-field'>
+          <input matInput [(ngModel)]="searchText" (keyup)="applyFilter($event)"  autocomplete="off">
+          <mat-placeholder class="placeholder">Search</mat-placeholder>
+        </mat-form-field>
+      </mat-toolbar>
+
+      <div class="btn-panel">
+        <div class="btn-group">
+          <button mat-raised-button color="accent" (click)="addItem()">
+            <mat-icon aria-label="Add local data">add</mat-icon>
+            Add local data
+          </button>
+  
+          <button mat-raised-button color="accent" (click)="addItem()">
+            <mat-icon aria-label="Add external data">add</mat-icon>
+            Add external data
+          </button>
+        </div>
+       
+
+        <mat-button-toggle-group #viewMode="matButtonToggleGroup" value="tableMode">
+          <mat-button-toggle value="tableMode" aria-label="Text align left">
+            Table view
+          </mat-button-toggle>
+          <mat-button-toggle value="cardMode" aria-label="Text align center">
+            Card view
+          </mat-button-toggle>
+        </mat-button-toggle-group>
+      </div>
+
+
+      
+
+
+      <div *ngIf="viewMode.value === 'cardMode'"  class="cardList">
+        <a *ngFor="let resource of workspaceResources | filter : searchText" (click)="selectResource(resource);"
+          class="cardList__item card" matRipple matRippleColor="rgba(158, 158, 158, 0.22)">
+          <mat-card>
+            <mat-card-title class="card-title">
+              {{ resource.name }}
+            </mat-card-title>
+            <mat-card-content>
+              <ul>
+                <li>Resource type: {{ resource.readable_resource_type }}</li>
+                <li>Size: {{ resource.size | byteName}}</li>
+                <li>Date added: {{ resource.created | date :'medium' }}</li>
+              </ul>
+
+            </mat-card-content>
+            <mat-card-footer>
+              <mat-icon fontSet="material-icons-outlined" title="Edit resource" (click)="editItem(resource)">
+                edit</mat-icon>
+              <mat-icon fontSet="material-icons-outlined" title="Preview resource" (click)="previewItem(resource.id)">
+                search</mat-icon>
+              <mat-icon fontSet="material-icons-outlined" title="Delete resource" (click)="deleteItem(resource)">delete
+              </mat-icon>
+            </mat-card-footer>
+          </mat-card>
+        </a>
+      </div>
+      <div *ngIf="viewMode.value === 'tableMode'" class="resource-table-container mat-elevation-z8">
+        <table mat-table [dataSource]="workspaceResourcesDS" matSort matSortActive="date" matSortDirection="desc">
+       
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Resource name </th>
+          <td mat-cell *matCellDef="let resource">
+            {{ resource.name }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="readable_resource_type">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Resource type </th>
+          <td mat-cell *matCellDef="let resource">
+            {{ resource.readable_resource_type }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="size">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Size </th>
+          <td mat-cell *matCellDef="let resource"> {{ resource.size | byteName }} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="created">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Creation date </th>
+          <td mat-cell *matCellDef="let resource"> {{ resource.created | date :'medium' }} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let resource">
+            <button mat-icon-button color="accent" title="Preview" (click)="previewItem(resource.id)">
+              <mat-icon aria-label="View">visibility</mat-icon>
+            </button>
+            <button mat-icon-button color="accent" title="Delete" (click)="deleteItem(resource)">
+              <mat-icon aria-label="Delete">delete</mat-icon>
+            </button>
+            <button mat-icon-button color="accent" title="Edit" (click)="editItem(resource)">
+              <mat-icon aria-label="Edit">edit</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;">
+
+      </table>
+      <div class="no-files-warn" *ngIf="workspaceResources?.length === 0">No files are present in your workspace.</div>
+      <mat-paginator #paginator [pageSizeOptions]="[5, 10, 25]" [pageIndex]="0" [pageSize]="10">
+      </mat-paginator>
+    </div>
+    </ng-template>
+  </mat-tab>
+
+  <mat-tab label="Metadata">
+    <ng-template matTabContent>
+      <mev-metadata *ngIf='workspaceResources' [workspaceResources]="workspaceResources"></mev-metadata>
+    </ng-template>
+  </mat-tab>
+
+  <mat-tab label="Analysis Flow">
+    <ng-template matTabContent>
+      <mev-analysis-flow (executedOperationId)="showExecutedOperationResult($event)"></mev-analysis-flow>
+    </ng-template>
+  </mat-tab>
+
+  <mat-tab label="Tools">
+    <ng-template matTabContent>
+      <mev-analyses (executedOperationId)="showExecutedOperationResult($event)"></mev-analyses>
+    </ng-template>
+  </mat-tab>
+
+  <mat-tab label="Plotting">
+    <ng-template matTabContent>
+      <mev-plotting-menu></mev-plotting-menu>
+    </ng-template>
+  </mat-tab>
+
+  <mat-tab label="Analyses Result">
+    <ng-template matTabContent>
+      <mev-executed-operation [execOperationId]="execOperationId"></mev-executed-operation>
+    </ng-template>
+  </mat-tab>
+
+</mat-tab-group>
